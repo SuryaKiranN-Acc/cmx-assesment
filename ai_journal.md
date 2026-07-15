@@ -80,3 +80,54 @@ write the unit test cases for the claims module by following the folder structur
 Generated test cases for all files including mappers
 ### Decision
 Accepted and removed the mapper tests as it is unnecessary to test for conversions without logic.
+
+## Entry 5: case logic
+
+### Prompt
+As this makes 3 seperate query interactions with database, use the case with new projection to fecth all data in single query
+
+### Response
+findDashboardStats method with new projection Dashboardstats
+
+### Decision
+Accepted
+
+## Entry 6: unit test cases
+### Prompt
+write the unit test cases for the claims module by following the folder structure.
+
+### Response
+Generated test cases for all files including mappers
+### Decision
+Accepted and removed the mapper tests as it is unnecessary to test for conversions without logic.
+
+## Entry 7: add logs
+
+### Prompt
+add the logging for all api calls with debug scope and make sure not to include any personal or sesitive information
+
+### Response
+added the staring and completion logs for all apis
+### Decision
+Accepted
+
+## Entry 8: exception handling
+add the exception handling and create some meaningful exceptions with required information which will be easy to identify
+
+### Response
+created new custome exception classes and global exception handler along with changes in controller classes with try catch and throws for Exceptions
+
+### Decision
+Rejected, As we already have global exception handler it is unnecessary to add try catch in controller for the custom exceptions. Here there is no need to catch Exception throw new exception.
+
+## Entry 9: exception handling
+remove the exception handling from controller. and make the global exception handler catch these exception and throw the custom exceptions from service class and throw exceptions from controller only if necessary, but don't catch exceptions in controller classes
+
+### Response
+created new custome exception classes and global exception handler along with changes in controller classes and service class
+
+### Decision
+Accepted
+
+
+

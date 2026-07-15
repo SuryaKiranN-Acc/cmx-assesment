@@ -129,10 +129,10 @@ paths:
   # WORKFLOW
   #################################################################
 
-  /workflow/claims/unassigned:
+  /claims/unassigned:
     get:
       tags:
-        - Workflow
+        - Claims
       operationId: getUnassignedClaims
 
       summary: Retrieve all unassigned claims
@@ -419,26 +419,34 @@ components:
       properties:
         reason:
           type: string
+        officerId:
+          type: string
 
     ApproveClaimRequest:
       type: object
 
       required:
         - approvedAmount
+        - officerId
 
       properties:
         approvedAmount:
           type: number
           format: double
+        officerId:
+          type: string
 
     RejectClaimRequest:
       type: object
 
       required:
         - reason
+        - officerId
 
       properties:
         reason:
+          type: string
+        officerId:
           type: string
     DashboardResponse:
       type: object
