@@ -112,8 +112,19 @@ paths:
 
         '404':
           $ref: '#/components/responses/ClaimNotFound'
-
-
+  /claims/dashboard:
+    get:
+      tags:
+        - Claims
+      operationId: getDashboard
+      summary: Dashboard metrics
+      responses:
+        '200':
+          description: Dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardResponse'
   #################################################################
   # WORKFLOW
   #################################################################
@@ -239,25 +250,6 @@ paths:
         '409':
           $ref: '#/components/responses/InvalidStateTransition'
 
-  #################################################################
-  # MANAGEMENT
-  #################################################################
-
-  /management/dashboard:
-    get:
-      tags:
-        - Management
-      operationId: getDashboard
-
-      summary: Dashboard metrics
-
-      responses:
-        '200':
-          description: Dashboard data
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DashboardResponse'
 
 components:
 
@@ -332,7 +324,6 @@ components:
 
       enum:
         - SUBMITTED
-        - TRIAGED
         - ASSIGNED
         - UNDER_REVIEW
         - INFO_REQUESTED
