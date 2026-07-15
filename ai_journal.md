@@ -128,6 +128,13 @@ created new custome exception classes and global exception handler along with ch
 
 ### Decision
 Accepted
+## Entry 10: review and optimization
+As a senior java developer review the code, so that it would be production ready
 
+### Response
+change to state validation from switch to map, async for events
+
+### Decision
+Accepted
 
 
