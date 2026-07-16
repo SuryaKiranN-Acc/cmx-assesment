@@ -1,6 +1,5 @@
 package com.acc.cmx.claims.claim.entity;
 
-import com.acc.cmx.claims.claim.entity.ClaimStatus;
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import lombok.*;

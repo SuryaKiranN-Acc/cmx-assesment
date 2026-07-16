@@ -1,82 +1,45 @@
 openapi: 3.0.3
-
 info:
   title: Claims Platform API
   version: 1.0.0
-  description: Claims Management Backend
-
+  description: Claims Management Backend - Modular Monolith
 servers:
   - url: http://localhost:8080
-
 tags:
   - name: Claims
-    description: Claim intake, tracking and claimant interactions
-
+    description: Claim intake, tracking, timeline and management reporting
   - name: Workflow
-    description: Claims officer operations and claim lifecycle management
-
-  - name: Management
-    description: Workload, exposure and operational reporting
-
+    description: Claims officer workflow and lifecycle operations
 paths:
-
-  #################################################################
-  # CLAIMS
-  #################################################################
-
   /claims:
     post:
       tags:
         - Claims
       operationId: createClaim
-      summary: Create a new claim
-
+      summary: Create claim
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateClaimRequest'
-
       responses:
         '201':
-          description: Claim created successfully
+          description: Claim created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ClaimResponse'
-
         '400':
           $ref: '#/components/responses/BadRequest'
-
-    get:
-      tags:
-        - Claims
-      operationId: getClaims
-
-      summary: List claims
-
-      responses:
-        '200':
-          description: Claims retrieved
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ClaimSummary'
-
   /claims/{claimId}:
     get:
       tags:
         - Claims
       operationId: getClaim
-
-      summary: Retrieve claim details
-
+      summary: Get claim details
       parameters:
         - $ref: '#/components/parameters/ClaimId'
-
       responses:
         '200':
           description: Claim found
@@ -84,40 +47,50 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ClaimResponse'
-
         '404':
           $ref: '#/components/responses/ClaimNotFound'
-
   /claims/{claimId}/additional-info:
     post:
       tags:
         - Claims
       operationId: submitAdditionalInformation
-
       summary: Submit additional information
-
       parameters:
         - $ref: '#/components/parameters/ClaimId'
-
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/AdditionalInfoRequest'
-
       responses:
         '200':
           description: Additional information submitted
-
         '404':
           $ref: '#/components/responses/ClaimNotFound'
-  /claims/dashboard:
+  /claims/{claimId}/timeline:
+    get:
+      tags:
+        - Claims
+      operationId: getClaimTimeline
+      summary: Get claim timeline
+      parameters:
+        - $ref: '#/components/parameters/ClaimId'
+      responses:
+        '200':
+          description: Claim timeline
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClaimEventResponse'
+  /claims/management/dashboard:
     get:
       tags:
         - Claims
       operationId: getDashboard
-      summary: Dashboard metrics
+      summary: Get management dashboard
       responses:
         '200':
           description: Dashboard data
@@ -125,18 +98,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DashboardResponse'
-  #################################################################
-  # WORKFLOW
-  #################################################################
-
-  /claims/unassigned:
+  /workflow/claims/unassigned:
     get:
       tags:
-        - Claims
+        - Workflow
       operationId: getUnassignedClaims
-
-      summary: Retrieve all unassigned claims
-
+      summary: Retrieve unassigned claims
       responses:
         '200':
           description: Unassigned claims
@@ -146,182 +113,151 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ClaimSummary'
-
   /workflow/claims/{claimId}/assign:
     post:
       tags:
         - Workflow
       operationId: assignClaim
-
       summary: Assign claim to officer
-
       parameters:
         - $ref: '#/components/parameters/ClaimId'
-
       requestBody:
         required: true
         content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AssignClaimRequest'
-
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignClaimRequest'
       responses:
         '200':
           description: Claim assigned
-
         '404':
           $ref: '#/components/responses/ClaimNotFound'
-
         '409':
           $ref: '#/components/responses/InvalidStateTransition'
-
   /workflow/claims/{claimId}/request-info:
     post:
       tags:
         - Workflow
       operationId: requestAdditionalInformation
-
       summary: Request additional information
-
       parameters:
         - $ref: '#/components/parameters/ClaimId'
-
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/RequestInfoRequest'
-
       responses:
         '200':
           description: Information requested
-
+        '404':
+          $ref: '#/components/responses/ClaimNotFound'
         '409':
           $ref: '#/components/responses/InvalidStateTransition'
-
   /workflow/claims/{claimId}/approve:
     post:
       tags:
         - Workflow
       operationId: approveClaim
-
       summary: Approve claim
-
       parameters:
         - $ref: '#/components/parameters/ClaimId'
-
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ApproveClaimRequest'
-
       responses:
         '200':
           description: Claim approved
-
+        '404':
+          $ref: '#/components/responses/ClaimNotFound'
         '409':
           $ref: '#/components/responses/InvalidStateTransition'
-
   /workflow/claims/{claimId}/reject:
     post:
       tags:
         - Workflow
       operationId: rejectClaim
-
       summary: Reject claim
-
       parameters:
         - $ref: '#/components/parameters/ClaimId'
-
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/RejectClaimRequest'
-
       responses:
         '200':
           description: Claim rejected
-
+        '404':
+          $ref: '#/components/responses/ClaimNotFound'
         '409':
           $ref: '#/components/responses/InvalidStateTransition'
-
-
+  /workflow/claims/{claimId}/status:
+    post:
+      tags:
+        - Workflow
+      operationId: changeClaimStatus
+      summary: Change claim status
+      parameters:
+        - $ref: '#/components/parameters/ClaimId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeStatusRequest'
+      responses:
+        '200':
+          description: Claim status updated
+        '404':
+          $ref: '#/components/responses/ClaimNotFound'
+        '409':
+          $ref: '#/components/responses/InvalidStateTransition'
 components:
-
-  #################################################################
-  # PARAMETERS
-  #################################################################
-
   parameters:
-
     ClaimId:
       name: claimId
       in: path
       required: true
-
       schema:
         type: string
-
-  #################################################################
-  # RESPONSES
-  #################################################################
-
   responses:
-
     BadRequest:
       description: Invalid request
-
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
-
     ClaimNotFound:
       description: Claim not found
-
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
-
     InvalidStateTransition:
       description: Invalid claim lifecycle transition
-
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
-
-  #################################################################
-  # SCHEMAS
-  #################################################################
-
   schemas:
-
     ErrorResponse:
       type: object
-
       properties:
         code:
           type: string
-          example: CLAIM_NOT_FOUND
-
         message:
           type: string
-          example: Claim CLM-1001 not found
-
         timestamp:
           type: string
           format: date-time
-
     ClaimStatus:
       type: string
-
       enum:
         - SUBMITTED
         - ASSIGNED
@@ -333,7 +269,6 @@ components:
         - SETTLEMENT_PENDING
         - SETTLED
         - CLOSED
-
     CreateClaimRequest:
       type: object
       required:
@@ -341,113 +276,100 @@ components:
         - policyNumber
         - incidentDescription
         - estimatedAmount
-
       properties:
         claimantName:
           type: string
-
         policyNumber:
           type: string
-
         incidentDescription:
           type: string
-
         estimatedAmount:
           type: number
           format: double
-
-    ClaimResponse:
-      type: object
-
-      properties:
-        claimId:
-          type: string
-
-        claimantName:
-          type: string
-
-        policyNumber:
-          type: string
-
-        estimatedAmount:
-          type: number
-          format: double
-
-        approvedAmount:
-          type: number
-          format: double
-
-        assignedOfficerId:
-          type: string
-
-        status:
-          $ref: '#/components/schemas/ClaimStatus'
-
-    ClaimSummary:
-      type: object
-
-      properties:
-        claimId:
-          type: string
-
-        claimantName:
-          type: string
-
-        status:
-          $ref: '#/components/schemas/ClaimStatus'
-
     AdditionalInfoRequest:
       type: object
-
       properties:
         comments:
           type: string
-
     AssignClaimRequest:
       type: object
-
       required:
         - officerId
-
       properties:
         officerId:
           type: string
-
     RequestInfoRequest:
       type: object
-
       properties:
         reason:
           type: string
-        officerId:
-          type: string
-
     ApproveClaimRequest:
       type: object
-
       required:
         - approvedAmount
-        - officerId
-
       properties:
         approvedAmount:
           type: number
           format: double
-        officerId:
-          type: string
-
     RejectClaimRequest:
       type: object
-
       required:
         - reason
-        - officerId
-
       properties:
         reason:
           type: string
-        officerId:
+    ClaimResponse:
+      type: object
+      properties:
+        claimId:
           type: string
+        claimantName:
+          type: string
+        policyNumber:
+          type: string
+        incidentDescription:
+          type: string
+        estimatedAmount:
+          type: number
+          format: double
+        approvedAmount:
+          type: number
+          format: double
+        assignedOfficerId:
+          type: string
+        additionalInfo:
+          type: string
+        rejectionReason:
+          type: string
+        status:
+          $ref: '#/components/schemas/ClaimStatus'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ClaimSummary:
+      type: object
+      properties:
+        claimId:
+          type: string
+        claimantName:
+          type: string
+        status:
+          $ref: '#/components/schemas/ClaimStatus'
+    ClaimEventResponse:
+      type: object
+      properties:
+        eventType:
+          type: string
+        fromStatus:
+          type: string
+        toStatus:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
     DashboardResponse:
       type: object
       properties:
@@ -455,13 +377,19 @@ components:
           type: integer
         openClaims:
           type: integer
-
         approvedClaims:
           type: integer
-
         rejectedClaims:
           type: integer
-
         outstandingExposure:
           type: number
           format: double
+    ChangeStatusRequest:
+      type: object
+      required:
+        - targetStatus
+      properties:
+        targetStatus:
+          $ref: '#/components/schemas/ClaimStatus'
+        comments:
+          type: string

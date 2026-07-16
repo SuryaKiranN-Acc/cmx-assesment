@@ -1,7 +1,7 @@
 # cmx-assesment
 cmx assesment
 
-This service implements the Claims Platform backend MVP (modular monolith). It is API-first and uses OpenAPI-generated interfaces.
+This service implements the Claims Platform backend. It is API-first and uses OpenAPI-generated interfaces.
 
 Run locally:
 
@@ -17,3 +17,9 @@ Key points:
 - State machine enforces claim lifecycle transitions.
 - Events are published via `DomainEventPublisher` (backed by Spring Application Events). Can be swapped for Kafka later.
 - Minimal in-memory H2 DB for demo.
+
+# Claim process workflow
+![alt text](image.png)
+
+# Postman Collection
+refer to Claims_Platform_API.postman_collection.json in this repo

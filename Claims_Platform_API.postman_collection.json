@@ -1,0 +1,323 @@
+{
+  "info": {
+    "name": "Claims Platform API",
+    "description": "Postman collection generated from Claims Platform OpenAPI 3.0.3 spec - Modular Monolith",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "claimId",
+      "value": "CLM-1001",
+      "type": "string"
+    },
+    {
+      "key": "officerId",
+      "value": "OFFICER-001",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Claims",
+      "description": "Claim intake, tracking, timeline and management reporting",
+      "item": [
+        {
+          "name": "Create Claim",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/claims",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "claims"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"claimantName\": \"Surya Kiran Narla\",\n  \"policyNumber\": \"POL-2026-1001\",\n  \"incidentDescription\": \"Vehicle damage due to accident\",\n  \"estimatedAmount\": 25000.5\n}"
+            },
+            "description": "Create claim"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Claim Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/claims/{{claimId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "claims",
+                "{{claimId}}"
+              ]
+            },
+            "description": "Get claim details"
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Additional Information",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/claims/{{claimId}}/additional-info",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "claims",
+                "{{claimId}}",
+                "additional-info"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comments\": \"Uploaded accident photos and repair estimate document.\"\n}"
+            },
+            "description": "Submit additional information"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Claim Timeline",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/claims/{{claimId}}/timeline",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "claims",
+                "{{claimId}}",
+                "timeline"
+              ]
+            },
+            "description": "Get claim timeline"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Management Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/claims/management/dashboard",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "claims",
+                "management",
+                "dashboard"
+              ]
+            },
+            "description": "Get management dashboard"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Workflow",
+      "description": "Claims officer workflow and lifecycle operations",
+      "item": [
+        {
+          "name": "Retrieve Unassigned Claims",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/workflow/claims/unassigned",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workflow",
+                "claims",
+                "unassigned"
+              ]
+            },
+            "description": "Retrieve unassigned claims"
+          },
+          "response": []
+        },
+        {
+          "name": "Assign Claim To Officer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/workflow/claims/{{claimId}}/assign",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workflow",
+                "claims",
+                "{{claimId}}",
+                "assign"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"officerId\": \"{{officerId}}\"\n}"
+            },
+            "description": "Assign claim to officer"
+          },
+          "response": []
+        },
+        {
+          "name": "Request Additional Information",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/workflow/claims/{{claimId}}/request-info",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workflow",
+                "claims",
+                "{{claimId}}",
+                "request-info"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Please provide repair invoice and incident photos.\"\n}"
+            },
+            "description": "Request additional information"
+          },
+          "response": []
+        },
+        {
+          "name": "Approve Claim",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/workflow/claims/{{claimId}}/approve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workflow",
+                "claims",
+                "{{claimId}}",
+                "approve"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"approvedAmount\": 22000.0\n}"
+            },
+            "description": "Approve claim"
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Claim",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/workflow/claims/{{claimId}}/reject",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workflow",
+                "claims",
+                "{{claimId}}",
+                "reject"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Claim is not covered under the policy terms.\"\n}"
+            },
+            "description": "Reject claim"
+          },
+          "response": []
+        },
+        {
+          "name": "Change Claim Status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/workflow/claims/{{claimId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workflow",
+                "claims",
+                "{{claimId}}",
+                "status"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetStatus\": \"UNDER_REVIEW\",\n  \"comments\": \"Claim moved to underwriting review.\"\n}"
+            },
+            "description": "Change claim status"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

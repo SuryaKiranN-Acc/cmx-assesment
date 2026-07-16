@@ -3,12 +3,17 @@ package com.acc.cmx.claims.claim.controller;
 import com.acc.cmx.claims.api.WorkflowApi;
 import com.acc.cmx.claims.api.model.ApproveClaimRequest;
 import com.acc.cmx.claims.api.model.AssignClaimRequest;
+import com.acc.cmx.claims.api.model.ChangeStatusRequest;
+import com.acc.cmx.claims.api.model.ClaimSummary;
 import com.acc.cmx.claims.api.model.RejectClaimRequest;
 import com.acc.cmx.claims.api.model.RequestInfoRequest;
 import com.acc.cmx.claims.claim.service.ClaimService;
 import com.acc.cmx.claims.common.exceptions.InvalidRequestException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -62,6 +67,21 @@ public class WorkflowController implements WorkflowApi {
 		}
 		claimService.assignClaim(claimId, assignClaimRequest);
 		log.debug("API call: assignClaim completed for claimId: {}", claimId);
+		return ResponseEntity.ok().build();
+	}
+
+	    @Override
+    public ResponseEntity<List<ClaimSummary>> getUnassignedClaims() {
+        log.debug("API call: getUnassignedClaims requested");
+        List<ClaimSummary> claims = claimService.getUnassignedClaims();
+        log.debug("API call: getUnassignedClaims completed with {} results", claims.size());
+        return ResponseEntity.ok(claims);
+    }
+
+	@Override
+	public ResponseEntity<Void> changeClaimStatus(String claimId, @Valid ChangeStatusRequest changeStatusRequest
+    ){
+		claimService.changeClaimStatus(claimId, changeStatusRequest);
 		return ResponseEntity.ok().build();
 	}
 }

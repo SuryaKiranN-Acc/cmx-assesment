@@ -112,12 +112,10 @@ public class ClaimService {
                 ClaimStatus.INFO_REQUESTED,
                 ClaimStatus.INFO_RECEIVED,
                 ClaimStatus.APPROVED,
-                ClaimStatus.SETTLEMENT_PENDING
-        );
+                ClaimStatus.SETTLEMENT_PENDING);
         DashboardStatsProjection stats = claimRepository.findDashboardStats(
                 openStatuses,
-                List.of(ClaimStatus.REJECTED, ClaimStatus.CLOSED, ClaimStatus.SETTLED)
-        );
+                List.of(ClaimStatus.REJECTED, ClaimStatus.CLOSED, ClaimStatus.SETTLED));
 
         DashboardResponse r = new DashboardResponse();
         r.setTotalClaims((int) stats.getTotal());
@@ -235,4 +233,62 @@ public class ClaimService {
         publisher.publish(new ClaimRejectedEvent(claimId, req.getReason()));
     }
 
+    @Transactional
+    public void changeClaimStatus(String claimId, ChangeStatusRequest req) {
+
+        Claim c = claimRepository.findById(claimId)
+                .orElseThrow(() -> new ClaimNotFoundException(claimId));
+
+        ClaimStatus targetStatus = ClaimStatus.valueOf(req.getTargetStatus().name());
+
+        try {
+            stateMachine.validateTransition(c.getStatus(), targetStatus);
+        } catch (IllegalStateException e) {
+            throw new InvalidClaimStateException(
+                    claimId,
+                    c.getStatus(),
+                    targetStatus);
+        }
+
+        ClaimStatus from = c.getStatus();
+
+        c.setStatus(targetStatus);
+        c.setUpdatedAt(OffsetDateTime.now());
+
+        claimRepository.save(c);
+
+        ClaimEvent event = ClaimEvent.builder()
+                .claimId(claimId)
+                .eventType("ClaimStatusChanged")
+                .fromStatus(from.name())
+                .toStatus(targetStatus.name())
+                .payload(req.getComments())
+                .createdAt(OffsetDateTime.now())
+                .build();
+
+        claimEventRepository.save(event);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ClaimEventResponse> getClaimTimeline(String claimId) {
+        try {
+            if (!claimRepository.existsById(claimId)) {
+                throw new ClaimNotFoundException(claimId);
+            }
+
+            List<ClaimEvent> events = claimEventRepository.findByClaimIdOrderByCreatedAtAsc(claimId);
+
+            return events.stream()
+                    .map(mapper::mapToClaimEventResponse)
+                    .toList();
+
+        } catch (ClaimNotFoundException ex) {
+            throw ex;
+
+        } catch (Exception ex) {
+            throw new RuntimeException(
+                    "Unable to retrieve claim timeline for claimId: " + claimId,
+                    ex);
+        }
+    }
 }

@@ -2,13 +2,14 @@ package com.acc.cmx.claims.claim.controller;
 
 import com.acc.cmx.claims.api.ClaimsApi;
 import com.acc.cmx.claims.api.model.AdditionalInfoRequest;
+import com.acc.cmx.claims.api.model.ClaimEventResponse;
 import com.acc.cmx.claims.api.model.ClaimResponse;
-import com.acc.cmx.claims.api.model.ClaimSummary;
 import com.acc.cmx.claims.api.model.CreateClaimRequest;
 import com.acc.cmx.claims.api.model.DashboardResponse;
 import com.acc.cmx.claims.claim.service.ClaimService;
 import com.acc.cmx.claims.common.exceptions.ClaimNotFoundException;
 import com.acc.cmx.claims.common.exceptions.InvalidRequestException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -74,10 +75,8 @@ public class ClaimController implements ClaimsApi {
     }
 
     @Override
-    public ResponseEntity<List<ClaimSummary>> getUnassignedClaims() {
-        log.debug("API call: getUnassignedClaims requested");
-        List<ClaimSummary> claims = claimService.getUnassignedClaims();
-        log.debug("API call: getUnassignedClaims completed with {} results", claims.size());
-        return ResponseEntity.ok(claims);
+    public ResponseEntity<List<ClaimEventResponse>> getClaimTimeline(String claimId) {
+        List<ClaimEventResponse> timeline = claimService.getClaimTimeline(claimId);
+        return ResponseEntity.ok(timeline);
     }
 }
